@@ -4,6 +4,7 @@ declare(strict_types=1);
 $units = ['', 'jeden ', 'dwa ', 'trzy ', 'cztery ', 'pięć ', 'sześć ', 'siedem ', 'osiem ', 'dziewięć '];
 $dozens = ['', 'dziesięć ', 'dwadzieścia ', 'trzydzieści ', 'czterdzieści ', 'pięćdziesiąt ', 'sześćdziesiąt ', 'siedemdziesiąt ', 'osiemdziesiąt ', 'dziewięćdziesiąt '];
 $hundreds = ['', 'sto ', 'dwieście ', 'trzysta ', 'czterysta ', 'pięćset ', 'sześćset ', 'siedemset ', 'osiemset ', 'dziewięćset '];
+$nastki = ['dziesięć', 'jedenaście ','dwanaście ','trzynaście ','czternaście ','pietnaście ','szesnaście ','siedemnaście ','osiemnaście ','dziewietnaście '];
 
 $given = str_replace(',','.',$argv[1]);
 if (strpos($given,'.')) {
@@ -18,20 +19,29 @@ if (strpos($given,'.')) {
 }
 
 if (!is_numeric($given)) {
-    echo 'Wprowadzony ciąg nie jest liczbą';
-} elseif (count(str_split(strval($separatedNumbers[1]))) > 2) {
-    echo 'Wprowadzono więcej niż 2 miejsca po przecinku';
+    exit('Wprowadzony ciąg znaków nie jest liczbą');
 } 
 
-var_dump ( $splitWholeNumber );
 foreach ($splitWholeNumber as $numbers) {
     echo numbersToWords($numbers);
 }
+echo ' i '.numbersToWords($fractionNumber);
 
 function numbersToWords($number) {
    global $hundreds;
    global $dozens;
    global $units;
+   global $nastki;
    $numberTable = str_split(strval($number));
-   return $hundreds[$numberTable[0]].$dozens[$numberTable[1]].$units[$numberTable[2]];
+
+    if (strlen($number) == 2 ) {
+        $numberTable = str_split(strval($number));
+        return $dozens[$numberTable[0]].$units[$numberTable[1]];
+    }
+
+    if ($numberTable[1] == '1') {
+        return $hundreds[$numberTable[0]].$nastki[$numberTable[2]];
+        } else {
+        return $hundreds[$numberTable[0]].$dozens[$numberTable[1]].$units[$numberTable[2]];
+    }
 }
