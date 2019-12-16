@@ -4,7 +4,7 @@ declare(strict_types=1);
 $units = ['', 'jeden ', 'dwa ', 'trzy ', 'cztery ', 'pięć ', 'sześć ', 'siedem ', 'osiem ', 'dziewięć '];
 $dozens = ['', 'dziesięć ', 'dwadzieścia ', 'trzydzieści ', 'czterdzieści ', 'pięćdziesiąt ', 'sześćdziesiąt ', 'siedemdziesiąt ', 'osiemdziesiąt ', 'dziewięćdziesiąt '];
 $hundreds = ['', 'sto ', 'dwieście ', 'trzysta ', 'czterysta ', 'pięćset ', 'sześćset ', 'siedemset ', 'osiemset ', 'dziewięćset '];
-$nastki = ['dziesięć', 'jedenaście ','dwanaście ','trzynaście ','czternaście ','pietnaście ','szesnaście ','siedemnaście ','osiemnaście ','dziewietnaście '];
+$nastki = ['dziesięć ', 'jedenaście ','dwanaście ','trzynaście ','czternaście ','pietnaście ','szesnaście ','siedemnaście ','osiemnaście ','dziewietnaście '];
 $orderOfMagnitude = [
     ['grosz ', 'grosze ', 'groszy '],
     ['złoty ', 'złote ', 'złotych '],
@@ -27,10 +27,14 @@ if (strpos($given,'.')) {
     $wholeNumber = $separatedNumbers[0];
     $wholeNumber = str_pad($wholeNumber, strlen($wholeNumber) + (3-(strlen($wholeNumber)%3)), "0", STR_PAD_LEFT);
     $splitWholeNumber = str_split($wholeNumber,3);
-    $fractionNumber = $separatedNumbers[1]; 
+    if (strlen($separatedNumbers[1]) == 1) {
+    $fractionNumber = $separatedNumbers[1].'0'; 
+    } else {
+        $fractionNumber = $separatedNumbers[1];
+    }
 } else {
-    $splitWholeNumber = [$argv[1]];
-    $fractionNumber = 00;
+    $splitWholeNumber = str_split($argv[1],3);
+    $fractionNumber = '00';
 }
 
 function numbersToWords($number) {
@@ -39,25 +43,32 @@ function numbersToWords($number) {
     global $units;
     global $nastki;
     global $orderOfMagnitude;
+    global $magnitudePosition ;
     $numberTable = str_split($number);
  
     if (strlen($number) == 2 ) {
         $numberTable = str_split($number);
         if ($numberTable[0] == '1') {
-        return $nastki[$numberTable[1]].$orderOfMagnitude[0][2];
-        } elseif ($numberTable[1] < 5) {
-        return $dozens[$numberTable[0]].$units[$numberTable[1]].$orderOfMagnitude[0][1];
-        } elseif (($numberTable[1] > 4)) {
-        return $dozens[$numberTable[0]].$units[$numberTable[1]].$orderOfMagnitude[0][2];
+            return $nastki[$numberTable[1]].$orderOfMagnitude[0][2];
+        } elseif ($number == '00' ) {
+            return 'zero groszy';
+        } elseif ($number == '01' ) {
+            return $dozens[$numberTable[0]].$units[$numberTable[1]].$orderOfMagnitude[0][0];
+        } elseif (( $numberTable[1] > 1 && $numberTable[1] < 5)) {
+            return $dozens[$numberTable[0]].$units[$numberTable[1]].$orderOfMagnitude[0][1];    
+        } else {
+            return $dozens[$numberTable[0]].$units[$numberTable[1]].$orderOfMagnitude[0][2]; 
         }
     }
  
     if ($numberTable[1] == '1') {
-    return $hundreds[$numberTable[0]].$nastki[$numberTable[2]];
-    } elseif ($numberTable[0] < 5) {
-    return $hundreds[$numberTable[0]].$dozens[$numberTable[1]].$units[$numberTable[2]];
+        return $nastki[$numberTable[1]].$orderOfMagnitude[1][2];
+    } elseif ($number == '001' ) {
+        return $hundreds[$numberTable[0]].$dozens[$numberTable[1]].$units[$numberTable[2]].$orderOfMagnitude[$magnitudePosition][0];
+    } elseif (( $numberTable[2] > 1 && $numberTable[2] < 5)) {
+        return $hundreds[$numberTable[0]].$dozens[$numberTable[1]].$units[$numberTable[2]].$orderOfMagnitude[$magnitudePosition][1];
     } else {
-    return $hundreds[$numberTable[0]].$dozens[$numberTable[1]].$units[$numberTable[2]];
+        return $hundreds[$numberTable[0]].$dozens[$numberTable[1]].$units[$numberTable[2]].$orderOfMagnitude[$magnitudePosition][2];
     }
 }
 
