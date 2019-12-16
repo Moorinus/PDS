@@ -33,6 +33,7 @@ if (strpos($given,'.')) {
         $fractionNumber = $separatedNumbers[1];
     }
 } else {
+   // $wholeNumber = str_pad($wholeNumber, strlen($wholeNumber) + (3-(strlen($wholeNumber)%3)), "0", STR_PAD_LEFT);
     $splitWholeNumber = str_split($argv[1],3);
     $fractionNumber = '00';
 }
